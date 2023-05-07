@@ -28,7 +28,9 @@ public class GameLogic : MonoBehaviour
               GameObject.Find("Mine").transform.position,
               GameObject.Find("House1").transform.position,
               GameObject.Find("House2").transform.position,
-              GameObject.Find("House3").transform.position
+              GameObject.Find("House3").transform.position,
+              GameObject.Find("FurnitureStore").transform.position,
+              GameObject.Find("House4").transform.position
         };
         CityPointsNames = new string[]
         {
@@ -41,6 +43,8 @@ public class GameLogic : MonoBehaviour
               "Mine",
               "House",
               "House",
+              "House",
+              "Furniture Store",
               "House"
         };
     }
@@ -79,7 +83,7 @@ public class GameLogic : MonoBehaviour
     }
     private void RandomiseClient()
     {
-        int rnd = Random.Range(0, 10);
+        int rnd = Random.Range(0, 12);
         Instantiate(client, CityPoints[rnd], Quaternion.identity);
     }
 }
