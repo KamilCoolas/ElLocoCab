@@ -8,10 +8,13 @@ public class GameLogic : MonoBehaviour
     bool isTaxiTaken = false;
     bool isClientSpawn = false;
     int points = 0;
+    float fTime = 100;
+    int time = 0;
     public GameObject client;
     public GameObject destination;
     public Text DestinationText;
     public Text PointsText;
+    public Text TimeText;
     Vector3[] CityPoints;
     string[] CityPointsNames;
     
@@ -56,7 +59,10 @@ public class GameLogic : MonoBehaviour
             RandomiseClient();
             isClientSpawn = true;
         }
+        fTime -= Time.deltaTime;
+        time = (int)fTime;
         PointsText.text = "Score: "+ points.ToString();
+        TimeText.text = "Time: " + time.ToString();
     }
     private void OnCollisionEnter(Collision target)
     {
@@ -66,6 +72,7 @@ public class GameLogic : MonoBehaviour
             isClientSpawn = false;
             RandomiseDestination();
             Destroy(target.gameObject);
+            fTime += 30;
         }
         else if (target.gameObject.tag.Equals("Destination"))
         {
@@ -73,6 +80,7 @@ public class GameLogic : MonoBehaviour
             DestinationText.text = "Look for new Client";
             Destroy(target.gameObject);
             points += 1;
+            fTime += 30;
         }
     }
     private void RandomiseDestination()
