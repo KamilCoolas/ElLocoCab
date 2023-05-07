@@ -9,6 +9,7 @@ public class ArrowFollow : MonoBehaviour
     Vector3 initialCarPosition;
     Vector3 absoluteInitArrowPosition;
     public MeshRenderer Arrow;
+    Vector3 lookDirection = Vector3.zero;
 
     void Start()
     {
@@ -21,12 +22,11 @@ public class ArrowFollow : MonoBehaviour
     void Update()
     {
         var go = GameObject.FindWithTag("Client");
-        Vector3 _lookDirection = Vector3.zero;
         if (go != null)
         {
             Transform Client = go.transform;
             Arrow.enabled = true;
-            _lookDirection = Client.position - transform.position;
+            lookDirection = Client.position - transform.position;
         }
         else
         {
@@ -35,15 +35,14 @@ public class ArrowFollow : MonoBehaviour
             {
                 Transform Destination = go2.transform;
                 Arrow.enabled = true;
-                _lookDirection = (new Vector3(Destination.position.x, Destination.position.y, Destination.position.z)) - transform.position;
+                lookDirection = Destination.position - transform.position;
             }
             else
             {
                 Arrow.enabled = false;
             }
         }
-
-        transform.rotation = Quaternion.LookRotation(_lookDirection.normalized, transform.up);
+        transform.rotation = Quaternion.LookRotation(lookDirection.normalized, transform.up);
         transform.position = absoluteInitArrowPosition + carTransform.transform.position;
 
     }
