@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Client
   - Destination
+  - Road
+  - Grass
   layers:
   - Default
   - TransparentFX

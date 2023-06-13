@@ -1,14 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class GameLogic : MonoBehaviour
 {
     bool isTaxiTaken = false;
     bool isClientSpawn = false;
     int points = 0;
-    float fTime = 100;
+    float fTime = 5;
     int time = 0;
     public GameObject client;
     public GameObject destination;
@@ -17,7 +20,9 @@ public class GameLogic : MonoBehaviour
     public Text TimeText;
     Vector3[] CityPoints;
     string[] CityPointsNames;
-    
+    public static bool gameOver = false;
+    float timeCounter;
+
     void Start()
     {
         CityPoints = new Vector3[]
@@ -33,11 +38,16 @@ public class GameLogic : MonoBehaviour
               GameObject.Find("House2").transform.position,
               GameObject.Find("House3").transform.position,
               GameObject.Find("FurnitureStore").transform.position,
-              GameObject.Find("House4").transform.position
+              GameObject.Find("House4").transform.position,
+              GameObject.Find("CarDealer").transform.position,
+              GameObject.Find("Cinema").transform.position,
+              GameObject.Find("Mall").transform.position,
+              GameObject.Find("Factory").transform.position,
+              GameObject.Find("House5").transform.position
         };
         CityPointsNames = new string[]
         {
-            "Factory",
+              "Factory",
               "University",
               "City Hall",
               "Tree Farm",
@@ -48,21 +58,49 @@ public class GameLogic : MonoBehaviour
               "House",
               "House",
               "Furniture Store",
+              "House",
+              "Car Dealer",
+              "Cinema",
+              "Mall",
+              "Factory",
               "House"
         };
     }
 
     void Update()
     {
-        if (!isTaxiTaken && !isClientSpawn )
+        if (!gameOver)
+        {
+        if (!isTaxiTaken && !isClientSpawn)
         {
             RandomiseClient();
             isClientSpawn = true;
         }
         fTime -= Time.deltaTime;
         time = (int)fTime;
-        PointsText.text = "Score: "+ points.ToString();
+        PointsText.text = "Score: " + points.ToString();
         TimeText.text = "Time: " + time.ToString();
+            if (isTaxiTaken && PrometeoCarController.carSpeed >= 60)
+            {
+                timeCounter += Time.deltaTime;
+            }
+            else timeCounter = 0;
+            if (timeCounter > 2)
+            {
+                points += 1;
+                timeCounter = 0;
+            }
+        if (time <= 0)
+        {
+            DestinationText.text = "GAME OVER" + Environment.NewLine + "Click Space to Restart";
+            gameOver = true;
+        }
+        }
+        if (gameOver && (Input.GetKey(KeyCode.Space)))
+        {
+            gameOver = false;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
     private void OnCollisionEnter(Collision target)
     {
@@ -85,13 +123,13 @@ public class GameLogic : MonoBehaviour
     }
     private void RandomiseDestination()
     {
-        int rnd = Random.Range(0, 10);
+        int rnd = Random.Range(0, 16);
         Instantiate(destination, CityPoints[rnd], Quaternion.identity);
         DestinationText.text = "Take me to " + CityPointsNames[rnd];
     }
     private void RandomiseClient()
     {
-        int rnd = Random.Range(0, 12);
+        int rnd = Random.Range(0, 16);
         Instantiate(client, CityPoints[rnd], Quaternion.identity);
     }
 }
