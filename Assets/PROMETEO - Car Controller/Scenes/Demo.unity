@@ -16399,6 +16399,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 772632626}
     - target: {fileID: 543450653621877421, guid: 79d0ca8b77e301442afdb49f102e8aed, type: 3}
+      propertyPath: timerTime
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 543450653621877421, guid: 79d0ca8b77e301442afdb49f102e8aed, type: 3}
       propertyPath: PointsText
       value: 
       objectReference: {fileID: 662673404}

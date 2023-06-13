@@ -11,7 +11,7 @@ public class GameLogic : MonoBehaviour
     bool isTaxiTaken = false;
     bool isClientSpawn = false;
     int points = 0;
-    float fTime = 5;
+    public float timerTime = 50;
     int time = 0;
     public GameObject client;
     public GameObject destination;
@@ -76,8 +76,8 @@ public class GameLogic : MonoBehaviour
             RandomiseClient();
             isClientSpawn = true;
         }
-        fTime -= Time.deltaTime;
-        time = (int)fTime;
+        timerTime -= Time.deltaTime;
+        time = (int)timerTime;
         PointsText.text = "Score: " + points.ToString();
         TimeText.text = "Time: " + time.ToString();
             if (isTaxiTaken && PrometeoCarController.carSpeed >= 60)
@@ -110,7 +110,7 @@ public class GameLogic : MonoBehaviour
             isClientSpawn = false;
             RandomiseDestination();
             Destroy(target.gameObject);
-            fTime += 30;
+            timerTime += 30;
         }
         else if (target.gameObject.tag.Equals("Destination"))
         {
@@ -118,7 +118,7 @@ public class GameLogic : MonoBehaviour
             DestinationText.text = "Look for new Client";
             Destroy(target.gameObject);
             points += 1;
-            fTime += 30;
+            timerTime += 30;
         }
     }
     private void RandomiseDestination()
