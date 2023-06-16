@@ -16,9 +16,8 @@ using UnityEngine.UI;
 
 public class PrometeoCarController : MonoBehaviour
 {
-   
+    
     //CAR SETUP
-
     [Space(20)]
     //[Header("CAR SETUP")]
     [Space(10)]
@@ -45,7 +44,7 @@ public class PrometeoCarController : MonoBehaviour
                                    // in the points x = 0 and z = 0 of your car. You can select the value that you want in the y axis,
                                    // however, you must notice that the higher this value is, the more unstable the car becomes.
                                    // Usually the y value goes from 0 to 1.5.
-    //WHEELS
+                                   //WHEELS
 
     //[Header("WHEELS")]
 
@@ -77,6 +76,8 @@ public class PrometeoCarController : MonoBehaviour
     // The following particle systems are used as tire smoke when the car drifts.
     public ParticleSystem RLWParticleSystem;
     public ParticleSystem RRWParticleSystem;
+    public ParticleSystem RDustParticleSystem = null;
+    public ParticleSystem LDustParticleSystem ;
 
     [Space(10)]
     // The following trail renderers are used as tire skids when the car loses traction.
@@ -101,6 +102,7 @@ public class PrometeoCarController : MonoBehaviour
     public bool useSounds = false;
     public AudioSource carEngineSound; // This variable stores the sound of the car engine.
     public AudioSource tireScreechSound; // This variable stores the sound of the tire screech (when the car is drifting).
+    public AudioSource tireOnGrassSound;
     float initialCarEngineSoundPitch; // Used to store the initial pitch of the car engine sound.
 
     //CONTROLS
@@ -127,6 +129,8 @@ public class PrometeoCarController : MonoBehaviour
     public static float carSpeed; // Used to store the speed of the car.
     [HideInInspector]
     public bool isDrifting; // Used to know whether the car is drifting or not.
+    [HideInInspector]
+    public bool isOnGrass = false;
     [HideInInspector]
     public bool isTractionLocked; // Used to know whether the traction of the car is locked or not.
 
@@ -283,16 +287,16 @@ public class PrometeoCarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
 
-            //CAR DATA
 
-            // We determine the speed of the car.
-            carSpeed = (2 * Mathf.PI * frontLeftCollider.radius * frontLeftCollider.rpm * 60) / 1000;
-            // Save the local velocity of the car in the x axis. Used to know if the car is drifting.
-            localVelocityX = transform.InverseTransformDirection(carRigidbody.velocity).x;
-            // Save the local velocity of the car in the z axis. Used to know if the car is going forward or backwards.
-            localVelocityZ = transform.InverseTransformDirection(carRigidbody.velocity).z;
+        //CAR DATA
+
+        // We determine the speed of the car.
+        carSpeed = (2 * Mathf.PI * frontLeftCollider.radius * frontLeftCollider.rpm * 60) / 1000;
+        // Save the local velocity of the car in the x axis. Used to know if the car is drifting.
+        localVelocityX = transform.InverseTransformDirection(carRigidbody.velocity).x;
+        // Save the local velocity of the car in the z axis. Used to know if the car is going forward or backwards.
+        localVelocityZ = transform.InverseTransformDirection(carRigidbody.velocity).z;
 
         //CAR PHYSICS
 
@@ -410,7 +414,29 @@ public class PrometeoCarController : MonoBehaviour
 
             // We call the method AnimateWheelMeshes() in order to match the wheel collider movements with the 3D meshes of the wheels.
             AnimateWheelMeshes();
-
+            if (frontLeftCollider.GetGroundHit(out WheelHit hit))
+            {
+                if (hit.collider.gameObject.tag.Equals("Grass"))
+                {
+                    maxSpeed = 60; //The maximum speed that the car can reach in km/h.
+                    maxReverseSpeed = 20; //The maximum speed that the car can reach while going on reverse in km/h.
+                    handbrakeDriftMultiplier = 10; // How much grip the car loses when the user hit the handbrake.
+                    accelerationMultiplier = 2; // How fast the car can accelerate. 1 is a slow acceleration and 10 is the fastest.
+                    decelerationMultiplier = 4; // How fast the car decelerates when the user is not using the throttle.
+                    isOnGrass = true;
+                    DustCarPS();
+                }
+                else if (hit.collider.gameObject.tag.Equals("Road"))
+                {
+                    maxSpeed = 120; //The maximum speed that the car can reach in km/h.
+                    maxReverseSpeed = 45; //The maximum speed that the car can reach while going on reverse in km/h.
+                    accelerationMultiplier = 5; // How fast the car can accelerate. 1 is a slow acceleration and 10 is the fastest.
+                    decelerationMultiplier = 2; // How fast the car decelerates when the user is not using the throttle.
+                    handbrakeDriftMultiplier = 5; // How much grip the car loses when the user hit the handbrake.
+                    isOnGrass = false;
+                    DustCarPS();
+                }
+            }
         }
         else
         {
@@ -763,7 +789,7 @@ public class PrometeoCarController : MonoBehaviour
         // drifting value has been reached. It will increase smoothly by using the variable Time.deltaTime.
         driftingAxis = driftingAxis + (Time.deltaTime);
         float secureStartingPoint = driftingAxis * FLWextremumSlip * handbrakeDriftMultiplier;
-
+        Brakes();
         if (secureStartingPoint < FLWextremumSlip)
         {
             driftingAxis = FLWextremumSlip / (FLWextremumSlip * handbrakeDriftMultiplier);
@@ -867,6 +893,50 @@ public class PrometeoCarController : MonoBehaviour
             if (RRWTireSkid != null)
             {
                 RRWTireSkid.emitting = false;
+            }
+        }
+
+    }
+    public void DustCarPS()
+    {
+
+        if (useEffects)
+        {
+            try
+            {
+                if (isOnGrass)
+                {
+                    RDustParticleSystem.Play();
+                    LDustParticleSystem.Play();
+                    if (!tireOnGrassSound.isPlaying)
+                    {
+                        tireOnGrassSound.Play();
+                    }
+                }
+                else if (!isOnGrass)
+                {
+                    RDustParticleSystem.Stop();
+                    LDustParticleSystem.Stop();
+                    if (tireOnGrassSound.isPlaying)
+                    {
+                        tireOnGrassSound.Stop();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning(ex);
+            }
+        }
+        else if (!useEffects)
+        {
+            if (RDustParticleSystem != null)
+            {
+                RDustParticleSystem.Stop();
+            }
+            if (LDustParticleSystem != null)
+            {
+                LDustParticleSystem.Stop();
             }
         }
 

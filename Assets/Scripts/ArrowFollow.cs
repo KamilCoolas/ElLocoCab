@@ -42,7 +42,9 @@ public class ArrowFollow : MonoBehaviour
                 Arrow.enabled = false;
             }
         }
-        transform.rotation = Quaternion.LookRotation(lookDirection.normalized, transform.up);
+        Quaternion q = Quaternion.LookRotation(lookDirection.normalized, transform.up);
+        q.eulerAngles = new Vector3(0, q.eulerAngles.y, 0);
+        transform.rotation = q;
         transform.position = absoluteInitArrowPosition + carTransform.transform.position;
 
     }
