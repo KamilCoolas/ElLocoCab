@@ -11,6 +11,6 @@ public class bonusTimeOnCreation : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        bonusTime = Vector3.Distance(player.transform.position, transform.position)/5;
+        bonusTime = Vector3.Distance(player.transform.position, transform.position)/6;
     }
 }

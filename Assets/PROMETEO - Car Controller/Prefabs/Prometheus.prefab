@@ -121,6 +121,8 @@ MonoBehaviour:
   useEffects: 1
   RLWParticleSystem: {fileID: 4402756320724654539}
   RRWParticleSystem: {fileID: 4402756320999286479}
+  RDustParticleSystem: {fileID: 0}
+  LDustParticleSystem: {fileID: 0}
   RLWTireSkid: {fileID: 7045468751846977024}
   RRWTireSkid: {fileID: 7045468751210077382}
   useUI: 1
@@ -128,6 +130,7 @@ MonoBehaviour:
   useSounds: 1
   carEngineSound: {fileID: 0}
   tireScreechSound: {fileID: 0}
+  tireOnGrassSound: {fileID: 0}
   useTouchControls: 0
   throttleButton: {fileID: 0}
   reverseButton: {fileID: 0}
@@ -135,6 +138,7 @@ MonoBehaviour:
   turnLeftButton: {fileID: 0}
   handbrakeButton: {fileID: 0}
   isDrifting: 0
+  isOnGrass: 0
   isTractionLocked: 0
 --- !u!114 &543450653621877421
 MonoBehaviour:
